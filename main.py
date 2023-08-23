@@ -20,15 +20,18 @@ class AssetsResolver:
         # Check for NXDOMAIN
         print("QNAME label= " + str(qname) + "\n")
 
-        if qtype == 'A' and "win.rpi.edu" in str(qname):
-            ip = lookup_ip(hostname)
-            if ip != '0.0.0.0':
-                rr = RR(dnsname, QTYPE.A, rdata=A(ip), ttl=60)
+        if qtype == 'A':
+            uncanny_domains = str(config['DEFAULT']['uncanny_domains']).split(',')
+            for domain in uncanny_domains:
+                if  domain in str(qname):
+                    ip = lookup_ip(hostname)
+                    if ip != '0.0.0.0':
+                        rr = RR(dnsname, QTYPE.A, rdata=A(ip), ttl=60)
 
-                reply.add_answer(rr)
+                        reply.add_answer(rr)
 
-                print("returned IP %s", (ip))
-                return reply
+                        print("returned IP %s", (ip))
+                        return reply
 
         # Send to to upstream
         upstream = config['DEFAULT']['upstream_ip']
